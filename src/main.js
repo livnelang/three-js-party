@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GUI } from "dat.gui";
 import musicSong from "./give_me_the_night.mp3";
 import { BaseAnimation } from "./baseAnimation";
+import StarWorld from "./starWorld";
 
 // const sizes = {
 //   width: 800,
@@ -24,7 +25,7 @@ const song = new Audio(musicSong);
 const gui = new GUI();
 const guiOptions = {
   music: false,
-  "animation speed": 1,
+  "animation speed": 1.1,
 };
 const animationsFolder = gui.addFolder("Animations");
 
@@ -42,10 +43,7 @@ gui.add(guiOptions, "animation speed", 0.5, 2, 0.001).onChange(() => {
 animationsFolder.open();
 
 let animations = {};
-const animationActions = [];
-let mainAnimation,
-  mainAnimations = {};
-let activeAction;
+let starWorld;
 let sphereMesh, cubeMesh;
 let characters = [];
 
@@ -56,7 +54,7 @@ async function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xa0a0a0);
+  // scene.background = new THREE.Color(0xa0a0a0);
   // scene.background = new THREE.Color(0x24caff);
   scene.fog = new THREE.Fog(0xa0a0a0, 500, 1000);
   // scene.add(new THREE.AxesHelper(500));
@@ -103,11 +101,11 @@ async function init() {
   );
   mesh.rotation.x = -Math.PI / 2;
   mesh.receiveShadow = true;
-  scene.add(mesh);
+  // scene.add(mesh);
 
   // grid
-  const grid = new THREE.GridHelper(2000, 20, 0x000000, 0x000000);
-  grid.material.opacity = 0.2;
+  const grid = new THREE.GridHelper(2000, 20, 0xffffff, 0xffffff);
+  grid.material.opacity = 0.5;
   grid.material.transparent = true;
   scene.add(grid);
 
@@ -126,10 +124,14 @@ async function init() {
   dirLight.shadow.camera.right = 120;
   scene.add(dirLight);
 
+  // add stars
+  // fillSceneWithStars(scene);
+
   window.addEventListener("resize", onWindowResize);
 
   await loadCharacter();
   await loadOtherCharacters();
+  starWorld = new StarWorld(scene);
 
   loadAnimations();
 
@@ -218,14 +220,6 @@ function loadAnimations() {
   });
 }
 
-function invokeAnimation(animationAction) {
-  if (activeAction) {
-    activeAction.stop();
-  }
-  animationAction.play();
-  activeAction = animationAction;
-}
-
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -247,6 +241,9 @@ function animate() {
 
   cubeMesh.rotation.x += 0.02;
   cubeMesh.rotation.y += 0.02;
+
+  // Update star positions
+  starWorld.animateStars();
 
   // camera.rotation.y += 0.01;
 
