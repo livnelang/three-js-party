@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GUI } from "dat.gui";
-import musicSong from "./give_me_the_night.mp3";
+import musicSong from "./macarena.mp3";
 import { BaseAnimation } from "./baseAnimation";
 import StarWorld from "./starWorld";
 
@@ -237,7 +237,7 @@ function animate() {
     }
   });
 
-  sphereMesh.rotation.y += 0.3;
+  sphereMesh.rotation.y += 0.03;
 
   cubeMesh.rotation.x += 0.02;
   cubeMesh.rotation.y += 0.02;

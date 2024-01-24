@@ -3,6 +3,8 @@ import * as THREE from "three";
 export const createStarMesh = () => {
   const sphere = new THREE.SphereGeometry(1, 24, 24);
   const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  // const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
+
   const starMesh = new THREE.Mesh(sphere, material);
 
   const [x, y, z] = new Array(3)
