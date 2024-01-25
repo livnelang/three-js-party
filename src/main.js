@@ -1,10 +1,9 @@
 import * as THREE from "three";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { GUI } from "dat.gui";
-import musicSong from "./macarena.mp3";
-import { BaseAnimation } from "./baseAnimation";
-import StarWorld from "./starWorld";
+import { BaseAnimation } from "./meshUtils/baseAnimation";
+import StarWorld from "./meshUtils/starWorld";
+import GuiManager from "./guiUtils/guiManager";
 
 // const sizes = {
 //   width: 800,
@@ -19,28 +18,8 @@ const sizes = {
 const loader = new FBXLoader();
 const clock = new THREE.Clock();
 const DEFAULT_POSE_PATH = "sporty_granny.fbx";
-let renderer, scene, camera, mixer;
-const song = new Audio(musicSong);
-
-const gui = new GUI();
-const guiOptions = {
-  music: false,
-  "animation speed": 1.1,
-};
-const animationsFolder = gui.addFolder("Animations");
-
-gui.add(guiOptions, "music").onChange((e) => {
-  if (e) {
-    song.play();
-  } else {
-    song.pause();
-  }
-});
-
-gui.add(guiOptions, "animation speed", 0.5, 2, 0.001).onChange(() => {
-  handleAnimationSpeed();
-});
-animationsFolder.open();
+let renderer, scene, camera;
+const guiManager = new GuiManager(handleAnimationSpeed);
 
 let animations = {};
 let starWorld;
@@ -124,9 +103,6 @@ async function init() {
   dirLight.shadow.camera.right = 120;
   scene.add(dirLight);
 
-  // add stars
-  // fillSceneWithStars(scene);
-
   window.addEventListener("resize", onWindowResize);
 
   await loadCharacter();
@@ -157,7 +133,7 @@ async function loadOtherCharacters() {
   animations[defualtAnimationPath] = () => {
     invokeAnimations(defualtAnimationPath);
   };
-  animationsFolder.add(animations, defualtAnimationPath);
+  guiManager.addAnimation(animations, defualtAnimationPath);
 }
 
 async function loadPromiseCharacter(path, idx) {
@@ -190,7 +166,7 @@ function invokeAnimations(path) {
 
 function handleAnimationSpeed() {
   characters.forEach((c, idx) => {
-    c.changeAnimationSpeen(guiOptions["animation speed"]);
+    c.changeAnimationSpeen(guiManager.guiOptions["animation speed"]);
   });
 }
 
@@ -210,7 +186,7 @@ function loadAnimations() {
         animations[path] = () => {
           invokeAnimations(path);
         };
-        animationsFolder.add(animations, path);
+        guiManager.addAnimation(animations, path);
       },
       undefined,
       function (error) {
@@ -244,8 +220,6 @@ function animate() {
 
   // Update star positions
   starWorld.animateStars();
-
-  // camera.rotation.y += 0.01;
 
   renderer.render(scene, camera);
 }
