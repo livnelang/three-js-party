@@ -28,11 +28,12 @@ export class BaseAnimation {
   };
 
   loadAnimation = async () => {
+    // const basePath = __dirname
     return new Promise((res, rej) => {
       const that = this;
       const loader = new FBXLoader();
       loader.load(
-        this.path,
+       this.path,
         function (characterModel) {
           that.characterModel = characterModel;
           that.mixer = new THREE.AnimationMixer(characterModel);
